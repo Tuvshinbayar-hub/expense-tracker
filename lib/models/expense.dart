@@ -23,6 +23,16 @@ const icons = {
   ExpenseCategory.rent: Icons.house
 };
 
+const colors = {
+  ExpenseCategory.education: Colors.lightBlue,
+  ExpenseCategory.food: Colors.deepOrangeAccent,
+  ExpenseCategory.gift: Colors.teal,
+  ExpenseCategory.health: Colors.greenAccent,
+  ExpenseCategory.investment: Colors.deepPurpleAccent,
+  ExpenseCategory.leisure: Colors.indigo,
+  ExpenseCategory.rent: Colors.redAccent
+};
+
 class Expense {
   Expense(this.title, this.amount, this.date, this.category) : id = uuid.v4();
   final String id;
@@ -30,7 +40,12 @@ class Expense {
   final int amount;
   final DateTime date;
   final ExpenseCategory category;
+
   Icon get icon {
     return Icon(icons[category]);
+  }
+
+  ColorSwatch<int> get color {
+    return colors[category]!;
   }
 }

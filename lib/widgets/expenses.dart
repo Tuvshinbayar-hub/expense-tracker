@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
-
   @override
   State<Expenses> createState() {
     return _ExpensesState();
@@ -20,11 +19,13 @@ class _ExpensesState extends State<Expenses> {
     Expense("Birthday gift", 200000, DateTime.now(), ExpenseCategory.gift),
     Expense("New books", 500000, DateTime.now(), ExpenseCategory.education),
   ];
+  int? removedExpenseIndex;
+  Expense? removedExpense;
 
-  SnackBar showSnackBar() {
+  SnackBar get snackBar {
     final snackBar = SnackBar(
-      content: Text('test'),
-      action: SnackBarAction(label: 'Undo', onPressed: () {}),
+      content: Text("You've deleted an expense"),
+      action: SnackBarAction(label: 'Undo', onPressed: _undoDelete),
     );
 
     return snackBar;
@@ -44,10 +45,28 @@ class _ExpensesState extends State<Expenses> {
   }
 
   void _onDelete(Expense expense) {
+    _registerDeletedExpense(expense);
     _deleteExpenseData(expense);
+    _showSnackBar();
   }
 
-  void _showSnackBar() {}
+  void _showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void _registerDeletedExpense(expense) {
+    removedExpenseIndex = expensesData.indexOf(expense);
+    removedExpense = expense;
+  }
+
+  void _undoDelete() {
+    setState(() {
+      if (removedExpense == null || removedExpenseIndex == null) {
+        return;
+      }
+      expensesData.insert(removedExpenseIndex!, removedExpense!);
+    });
+  }
 
   void _deleteExpenseData(Expense expense) {
     setState(() {
@@ -67,7 +86,12 @@ class _ExpensesState extends State<Expenses> {
       ),
       body: Column(
         children: [
-          Graph(),
+          Graph(
+            expenses: expensesData,
+          ),
+          SizedBox(
+            height: 4,
+          ),
           Expanded(
             child: ExpenseList(
               expenses: expensesData,
